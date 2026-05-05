@@ -129,34 +129,76 @@ This is not "we ran inference on AMD." The AMD hardware is the reason the featur
 
 ## Quick Start
 
-**Prerequisites:** Docker, an AMD Developer Cloud account with MI300X access, Node.js 22, pnpm
+**Prerequisites:** Docker, AMD Developer Cloud account with MI300X access, Node.js 22, pnpm, Python 3.10+
+
+### Step 1 — Spin up vLLM on AMD Developer Cloud
+
+Create a GPU droplet (MI300X, vLLM image) on [AMD Developer Cloud](https://cloud.amd.com), then SSH in and run:
 
 ```bash
-# 1. Clone
+# Pull and serve Qwen2.5-72B (fits in 192GB VRAM)
+vllm serve Qwen/Qwen2.5-72B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --max-model-len 131072
+
+# Verify it's running
+curl http://localhost:8000/v1/models
+```
+
+### Step 2 — Clone and configure Manticore
+
+```bash
 git clone https://github.com/Deez-Automations/manticore
 cd manticore
 
-# 2. Point to your vLLM endpoint on AMD cloud
+# Point to your AMD droplet
 export ANTHROPIC_BASE_URL=http://<your-droplet-ip>:8000/v1
 export ANTHROPIC_API_KEY=placeholder
 export ANTHROPIC_MEDIUM_MODEL=Qwen/Qwen2.5-72B-Instruct
 export ANTHROPIC_LARGE_MODEL=Qwen/Qwen2.5-72B-Instruct
 
-# 3. Build
+# Install Python dependencies for chain synthesis
+pip install -r manticore_engine/requirements.txt
+```
+
+### Step 3 — Run the pentest pipeline
+
+```bash
+# Build the Docker worker image
 ./manticore build
 
-# 4. Run against a target
+# Run full pipeline against target
 ./manticore start -u <target-url> -r <path-to-repo>
 ```
 
-**Spin up vLLM on AMD Developer Cloud:**
+### Step 4 — Run Manticore chain synthesis
+
+After Shannon's pipeline completes, run the chain synthesis engine:
 
 ```bash
-# On your MI300X droplet (vLLM image pre-installed)
-vllm serve Qwen/Qwen2.5-72B-Instruct \
-  --host 0.0.0.0 \
-  --port 8000 \
-  --max-model-len 131072
+# Point to the workspace deliverables from the completed scan
+python manticore_engine/run.py ./workspaces/<workspace-name>/deliverables <target-url>
+```
+
+**Output:**
+- `manticore_chains.json` — raw chain data with severity upgrades
+- `manticore_report.md` — full HackerOne-style security assessment report
+
+### Full Example (DVWA)
+
+```bash
+# Start DVWA locally
+docker run -d -p 80:80 vulnerables/web-dvwa
+
+# Run Manticore full pipeline
+export ANTHROPIC_BASE_URL=http://<amd-droplet-ip>:8000/v1
+export ANTHROPIC_API_KEY=placeholder
+export ANTHROPIC_MEDIUM_MODEL=Qwen/Qwen2.5-72B-Instruct
+export ANTHROPIC_LARGE_MODEL=Qwen/Qwen2.5-72B-Instruct
+
+./manticore start -u http://localhost:80 -r ./dvwa-repo -w dvwa-scan
+python manticore_engine/run.py ./workspaces/dvwa-scan/deliverables http://localhost:80
 ```
 
 ---
