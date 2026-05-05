@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/banner.png" alt="Manticore" width="100%">
+  <img src="./assets/banner.gif" alt="Manticore" width="100%">
 </div>
 
 # Manticore
