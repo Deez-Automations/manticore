@@ -86,16 +86,17 @@ Target URL + Source Code
 └────────┬────────────────────────────────────────────────────┘
          ▼
 ┌─────────────────────┐
-│  Phase 5: Synthesis │  ← MANTICORE'S CORE
+│  Phase 5: Synthesis │  ← MANTICORE'S CORE — 3 specialist agents
 │                     │
-│  All findings →     │  Single 80-150k token inference call on
-│  one context →      │  Qwen2.5-72B (AMD MI300X, 192GB VRAM).
-│  attack chains      │  Compound paths. Severity upgrades. Kill paths.
+│  Chain Builder  →   │  Proposes compound attack paths from all findings
+│  Validator      →   │  Independently challenges and approves each chain
+│  Executor       →   │  Converts to exact Playwright steps + CVSS score
+│                     │  All running on Qwen2.5-72B (AMD MI300X, 192GB VRAM)
 └────────┬────────────┘
          ▼
 ┌─────────────────────┐
-│  Phase 6: Report    │  HackerOne-style report. Chain narratives.
-│                     │  Before/after severity. Live PoC attached.
+│  Phase 6: Report    │  HackerOne-style report. Severity upgrade cards.
+│                     │  Kill paths. Remediation. Live PoC attached.
 └─────────────────────┘
 ```
 
