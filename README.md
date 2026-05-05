@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./assets/banner.png" alt="Manticore" width="100%">
+</div>
+
 # Manticore
 
 > **AI pentesting agent that finds the kill path, not just the vulnerabilities.**
