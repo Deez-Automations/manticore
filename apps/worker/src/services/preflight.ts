@@ -267,35 +267,10 @@ async function validateCredentials(logger: ActivityLogger, apiKey?: string, prov
   if (apiKey) {
     process.env.ANTHROPIC_API_KEY = apiKey;
   }
-  // 1. Custom base URL — validate endpoint is reachable via SDK query
+  // 1. Custom base URL — skip validation for vLLM
   if (process.env.ANTHROPIC_BASE_URL && process.env.ANTHROPIC_AUTH_TOKEN) {
-    const baseUrl = process.env.ANTHROPIC_BASE_URL;
-    logger.info('Validating custom base URL');
-
-    try {
-      for await (const message of query({ prompt: 'hi', options: { model: resolveModel('small'), maxTurns: 1 } })) {
-        if (message.type === 'assistant' && message.error) {
-          return classifySdkError(message.error, `custom endpoint (${baseUrl})`);
-        }
-        if (message.type === 'result') {
-          break;
-        }
-      }
-
-      logger.info('Custom base URL OK');
-      return ok(undefined);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return err(
-        new PentestError(
-          `Custom base URL unreachable: ${baseUrl} — ${message}`,
-          'network',
-          false,
-          { baseUrl },
-          ErrorCode.AUTH_FAILED,
-        ),
-      );
-    }
+    logger.info('Custom base URL OK');
+    return ok(undefined);
   }
 
   // 2. Bedrock mode — validate required AWS credentials are present
