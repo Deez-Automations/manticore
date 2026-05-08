@@ -60,7 +60,7 @@ Downstream vulnerability analysis will cover these classes: {{VULN_CLASSES_TESTE
 Run these in sequence:
 
 1. `Grep("function\s+\w+|Route\(|router\.|app\.get|app\.post|\$_GET|\$_POST|\$_REQUEST|\$_COOKIE", output_mode="files_with_matches")` — find all route/handler files
-2. `Grep("\$_GET|\$_POST|\$_REQUEST|\$_COOKIE", output_mode="content")` — find all user input sources
+2. `Grep("\$_GET|\$_POST|\$_REQUEST|\$_COOKIE", output_mode="files_with_matches")` — find all user input sources
 3. `Grep("header\(|setcookie\(|session_start\(|session_destroy\(", type="php")` — find session/cookie management
 4. `Grep("role|permission|admin|isAdmin|access_level", output_mode="files_with_matches")` — find authorization checks
 5. `Grep("include\s*\(|require\s*\(|file_get_contents|fopen|curl_exec", type="php")` — find file/network ops
