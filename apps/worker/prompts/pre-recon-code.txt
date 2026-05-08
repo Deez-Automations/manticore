@@ -136,37 +136,47 @@ Edit(".shannon/deliverables/pre_recon_deliverable.md", append sinks section)
 Edit(".shannon/deliverables/pre_recon_deliverable.md", append closing brace)
 ```
 
-### JSON Schema — follow exactly, no extra fields, no prose:
+### JSON Schema — keywords only, no phrases, no sentences:
+
+Use ONLY these keyword codes for flags/types (downstream agents know these codes):
+- Query types: `concat` `param` `orm`
+- Auth flags: `no_csrf` `no_ratelimit` `md5` `plaintext` `no_httponly` `no_secure` `no_samesite`
+- Sink types: `echo` `print` `innerHTML` `eval` `curl` `file_get_contents` `include` `exec` `system`
+- Input sources: `GET` `POST` `COOKIE` `REQUEST` `SESSION` `HEADER`
 
 ```json
 {
   "stack": {"lang": "PHP", "framework": "DVWA", "db": "MySQL", "auth_file": "dvwa/login.php"},
   "auth_endpoints": [
-    {"method": "POST", "path": "/login.php", "file": "dvwa/login.php", "params": ["username","password"]}
+    {"method": "POST", "path": "/login.php", "file": "dvwa/login.php", "params": ["username","password"], "flags": ["no_csrf","no_ratelimit"]}
   ],
   "entry_points": [
     {"method": "GET", "path": "/vulnerabilities/sqli/", "file": "sqli/source/low.php", "param": "id"}
   ],
   "db_queries": [
-    {"file": "sqli/source/low.php", "line": 12, "type": "concatenated", "input": "$_GET[id]"}
+    {"file": "sqli/source/low.php", "line": 12, "type": "concat", "source": "GET"}
   ],
   "xss_sinks": [
-    {"file": "xss_r/source/low.php", "line": 15, "sink": "echo", "input": "$_GET[name]"}
+    {"file": "xss_r/source/low.php", "line": 15, "sink": "echo", "source": "GET"}
   ],
   "ssrf_sinks": [
-    {"file": "ssrf.php", "line": 8, "fn": "curl_exec", "input": "$_GET[url]"}
+    {"file": "ssrf.php", "line": 8, "func": "curl", "source": "GET"}
   ],
-  "session": {"cookie_flags": "httponly=false,secure=false", "file": "dvwa/includes/dvwaSession.inc.php"},
-  "secrets": ["config/config.inc.php: DB_PASSWORD plaintext"],
+  "cmd_sinks": [
+    {"file": "exec.php", "line": 22, "func": "exec", "source": "GET"}
+  ],
+  "session": {"file": "dvwa/includes/dvwaSession.inc.php", "flags": ["no_httponly","no_secure"]},
+  "secrets": ["config/config.inc.php:DB_PASSWORD:plaintext"],
   "critical_files": ["dvwa/login.php","config/config.inc.php","dvwa/includes/dvwaSecurity.inc.php"]
 }
 ```
 
 **RULES:**
-- Arrays: max 15 items each
-- String values: max 10 words each
-- NO prose, NO explanations, NO markdown outside the JSON block
-- Write the JSON in 3 separate Edit calls (split at natural breakpoints to stay under 300 words per call)
+- Include ALL findings — do not cap arrays
+- Values must be keywords, file paths, line numbers, or param names ONLY
+- NEVER write a sentence or phrase as a value — use codes from the keyword list above
+- NO prose outside the JSON block
+- Split across multiple Edit calls at natural key boundaries
 
 ---
 
