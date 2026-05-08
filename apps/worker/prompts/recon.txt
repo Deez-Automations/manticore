@@ -15,6 +15,10 @@ OUTPUT SIZE: HARD LIMIT — 300 words per Write or Edit call. Count your words b
 
 SKIP: external/, vendor/, node_modules/, .git/ — never read files in these directories.
 
+READ LIMIT: Never read a file larger than 50 lines. Use Read with offset/limit if needed. Never read template, include, page, or layout files (dvwaPage.inc.php, header.php, footer.php, etc.).
+
+GREP LIMIT: Always use output_mode="files_with_matches". Never use output_mode="content". Never run a grep that could return hundreds of matches.
+
 FINISH: The final action must always be the save-deliverable command. Do not stop before running it.
 </qwen_behavioral_rules>
 
