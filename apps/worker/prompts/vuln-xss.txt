@@ -74,22 +74,14 @@ An **exploitable vulnerability** is a confirmed source-to-sink path where the en
 
 <cli_tools>
 
-**CRITICAL TOOL USAGE RESTRICTIONS:**
-- NEVER use the Read tool for application source code analysis - ALWAYS delegate to Task agents for examining .js, .ts, .py, .php files and application logic. You MAY use Read
-  tool directly for these files: `.shannon/deliverables/pre_recon_deliverable.md`, `.shannon/deliverables/recon_deliverable.md`
-- Direct the Task Agent to trace render contexts, sanitization coverage, and template/component boundaries before deciding on exploitability.
-- **ALWAYS delegate code analysis to Task agents**
-
-**Available Tools:**
-- **Task Agent (Code Analysis):** MANDATORY for all source code analysis and data flow tracing. Use this instead of Read tool for examining application code, models, controllers, and templates.
-- **Terminal (curl):** MANDATORY for testing HTTP-based XSS vectors and observing raw HTML responses. Use for reflected XSS testing and JSONP injection testing.
-- **Browser Automation (playwright-cli skill):** MANDATORY for testing DOM-based XSS and form submission vectors. Invoke the `playwright-cli` skill to learn available commands. Use for stored XSS testing and client-side payload execution verification. Always pass `-s={{PLAYWRIGHT_SESSION}}` to every command for session isolation.
-- **TodoWrite Tool:** Use this to create and manage your analysis task list. Create a todo item for each sink you need to analyze.
+**Available Tools — use Read, Grep, Glob directly for all code analysis. Do NOT spawn sub-agents.**
+- **Read / Grep / Glob:** Use directly to examine source code, trace data flows, find sinks and sanitizers.
+- **Terminal (curl):** For testing HTTP-based XSS vectors and observing raw HTML responses.
+- **Browser Automation (playwright-cli skill):** For DOM-based XSS and form submission testing. Invoke `playwright-cli` skill first. Always pass `-s={{PLAYWRIGHT_SESSION}}` for session isolation.
 - **save-deliverable (CLI Tool):** Saves your deliverable files with automatic validation.
   - **Usage:** `save-deliverable --type <TYPE> --file-path <path>` or `--content '<text>'`
   - **Returns:** JSON to stdout: `{"status":"success","filepath":"..."}` or `{"status":"error","message":"...","retryable":true}`
   - **For large reports:** Write to disk first, then use `--file-path`. Do NOT pass large reports via `--content`.
-
 - **Bash tool:** Use for creating directories, copying files, and other shell commands as needed.
 </cli_tools>
 
