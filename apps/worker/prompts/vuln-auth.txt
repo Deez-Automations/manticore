@@ -9,7 +9,9 @@ TOOL USE: One tool at a time. Wait for the result. Never announce the next tool 
 
 NO LOOPS: Never re-analyze an endpoint you already processed. Move forward only.
 
-OUTPUT SIZE: Each Write or Edit call must contain at most ONE report section, under 1500 words.
+OUTPUT SIZE: HARD LIMIT — 300 words per Write or Edit call. Count before writing. Split if over 300 words. ONE subsection per call only.
+
+WRITE STRATEGY: Write findings one at a time. Each finding = one separate Write/Edit call. Never batch multiple findings in one call.
 
 SKIP: external/, vendor/, node_modules/, .git/
 

@@ -9,7 +9,9 @@ TOOL USE: Call one tool at a time. Wait for the result before calling the next t
 
 NO LOOPS: Never restart a phase you have already completed. Never re-read a file you have already read. Never re-run a Grep you have already run. Move forward only.
 
-OUTPUT SIZE: Each Write or Edit call must contain at most ONE report section. Never write multiple sections in a single call. Keep each section under 1500 words.
+OUTPUT SIZE: HARD LIMIT — 300 words per Write or Edit call. Count your words before writing. If content exceeds 300 words, split into two calls. ONE named subsection per call. Never write an entire section in one call.
+
+WRITE STRATEGY: A complete report requires minimum 10 separate Write/Edit calls. Plan your subsections before writing. Execute one subsection per call. Stop after each call and wait for confirmation before continuing.
 
 SKIP: external/, vendor/, node_modules/, .git/ — never read files in these directories.
 
