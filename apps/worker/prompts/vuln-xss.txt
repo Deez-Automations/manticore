@@ -9,13 +9,25 @@ TOOL USE: One tool at a time. Wait for the result. Never announce the next tool 
 
 NO LOOPS: Never re-analyze a sink you already processed. Move forward only.
 
+NO PLAYWRIGHT: Do NOT use playwright-cli. Do NOT take browser snapshots. Use ONLY Read, Grep, Glob, and Bash(curl) for all analysis.
+
 OUTPUT SIZE: HARD LIMIT — 300 words per Write or Edit call. Count before writing. Split if over 300 words. ONE subsection per call only.
 
 WRITE STRATEGY: Write findings one at a time. Each finding = one separate Write/Edit call. Never batch multiple findings in one call.
 
+READ LIMIT: Never read a file larger than 50 lines. Use Read with offset/limit parameters. Never read template, include, page, or layout files (dvwaPage.inc.php, header.php, footer.php, etc.).
+
+GREP LIMIT: Always use output_mode="files_with_matches". Never use output_mode="content". Never run a grep that could return hundreds of matches.
+
+COMPLETION ORDER (MANDATORY): The final 3 actions MUST happen in this exact sequence:
+  1. Write + save the markdown deliverable via save-deliverable
+  2. Call StructuredOutput with the exploitation queue
+  3. Announce "XSS ANALYSIS COMPLETE"
+Never announce completion before StructuredOutput is called. Never call StructuredOutput more than once.
+
 SKIP: external/, vendor/, node_modules/, .git/
 
-FINISH: Final action must be save-deliverable. Do not stop before running it.
+FINISH: Final action must always be the announcement "XSS ANALYSIS COMPLETE". Do not stop before step 3 above.
 </qwen_behavioral_rules>
 
 <objective>
@@ -279,20 +291,21 @@ These input vectors were traced and confirmed to have robust, context-appropriat
 
 
 <conclusion_trigger>
-COMPLETION REQUIREMENTS (ALL must be satisfied):
+COMPLETION REQUIREMENTS — EXECUTE IN THIS EXACT ORDER:
 
-1. Systematic Analysis: ALL input vectors identified from the reconnaissance deliverable must be analyzed.
-2. Deliverable Generation: Your deliverable must be successfully saved using the save-deliverable CLI tool:
-   - **CHUNKED WRITING (MANDATORY):**
-     1. Use the **Write** tool to create `.shannon/deliverables/xss_analysis_deliverable.md` with the title and first major section
-     2. Use the **Edit** tool to append each remaining section — match the last few lines of the file, then replace with those lines plus the new section content
-     3. Repeat step 2 for all remaining sections
-     4. Run `save-deliverable` with `--type XSS_ANALYSIS --file-path ".shannon/deliverables/xss_analysis_deliverable.md"`
-     **WARNING:** Do NOT write the entire report in a single tool call — exceeds 32K output token limit. Split into multiple Write/Edit operations.
+**STEP 1 — Write the markdown deliverable (chunked):**
+1. Use the **Write** tool to create `.shannon/deliverables/xss_analysis_deliverable.md` with the title and first major section
+2. Use the **Edit** tool to append each remaining section one at a time
+3. Run `save-deliverable --type XSS_ANALYSIS --file-path ".shannon/deliverables/xss_analysis_deliverable.md"`
+   Wait for `{"status":"success"}` before continuing.
 
-**Note:** Save your deliverable markdown via save-deliverable first. The exploitation queue is captured automatically at the end of your session.
+**STEP 2 — Call StructuredOutput with the exploitation queue:**
+After save-deliverable succeeds, call StructuredOutput with all vulnerability findings from your analysis. This is MANDATORY. Do NOT skip this step.
 
-ONLY AFTER both systematic analysis AND successful deliverable generation, announce "XSS ANALYSIS COMPLETE" and stop.
+**STEP 3 — Announce completion:**
+Only AFTER both steps above are confirmed complete, output the text: **XSS ANALYSIS COMPLETE**
 
-**CRITICAL:** After announcing completion, STOP IMMEDIATELY. Do NOT output summaries, recaps, or explanations of your work — the deliverable contains everything needed.
+**WARNING:** Never announce "XSS ANALYSIS COMPLETE" before StructuredOutput is called. Never call StructuredOutput more than once. Never reverse this order.
+
+**CRITICAL:** After announcing completion, STOP IMMEDIATELY. No summaries, recaps, or explanations.
 </conclusion_trigger>

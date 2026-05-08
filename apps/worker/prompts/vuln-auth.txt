@@ -9,9 +9,21 @@ TOOL USE: One tool at a time. Wait for the result. Never announce the next tool 
 
 NO LOOPS: Never re-analyze an endpoint you already processed. Move forward only.
 
+NO PLAYWRIGHT: Do NOT use playwright-cli. Do NOT take browser snapshots. Use ONLY Read, Grep, Glob, and Bash(curl) for all analysis.
+
 OUTPUT SIZE: HARD LIMIT — 300 words per Write or Edit call. Count before writing. Split if over 300 words. ONE subsection per call only.
 
 WRITE STRATEGY: Write findings one at a time. Each finding = one separate Write/Edit call. Never batch multiple findings in one call.
+
+READ LIMIT: Never read a file larger than 50 lines. Use Read with offset/limit parameters. Never read template, include, page, or layout files (dvwaPage.inc.php, header.php, footer.php, etc.).
+
+GREP LIMIT: Always use output_mode="files_with_matches". Never use output_mode="content". Never run a grep that could return hundreds of matches.
+
+CURL LIMIT: Always pipe curl through `| head -c 400`. Never let raw HTML responses accumulate in context. Extract only what you need (header values, specific field values).
+
+FILE CAP: Maximum 8 total file reads for the entire session. Maximum 5 Grep searches. Choose the highest-value security files — auth handlers, session config, login logic only.
+
+WRITE EARLY: Do not wait until all analysis is done. After identifying your first 3 findings, begin writing the deliverable immediately. Continue analysis and writing in alternating small steps.
 
 SKIP: external/, vendor/, node_modules/, .git/
 
