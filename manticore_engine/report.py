@@ -124,9 +124,14 @@ Automated chain execution via Playwright confirmed. See attached PoC recording.
 
 
 def format_chain(chain: dict) -> str:
+    import json as _json
     severity = chain.get("severity", "HIGH")
     ratings_before = " | ".join(chain.get("severity_before", {}).get("ratings", ["Unknown"]))
-    steps = "\n".join(f"{i+1}. {step}" for i, step in enumerate(chain.get("steps", [])))
+    steps_raw = chain.get("steps") or chain.get("playwright_steps", [])
+    if steps_raw and isinstance(steps_raw[0], dict):
+        steps = "\n".join(f"{i+1}. {s.get('note', _json.dumps(s))}" for i, s in enumerate(steps_raw))
+    else:
+        steps = "\n".join(f"{i+1}. {step}" for i, step in enumerate(steps_raw))
     endpoints = "\n".join(f"- `{ep}`" for ep in chain.get("affected_endpoints", []))
     cwe_ids = ", ".join(chain.get("cwe_ids", []))
 
@@ -148,12 +153,12 @@ def format_chain(chain: dict) -> str:
     )
 
 
-def load_shannon_report(deliverables_dir: str) -> str:
+def load_findings_report(deliverables_dir: str) -> str:
     report_path = os.path.join(deliverables_dir, "comprehensive_security_assessment_report.md")
     if os.path.exists(report_path):
         with open(report_path) as f:
             return f.read()
-    return "_Shannon individual findings report not found. Run the full pipeline first._"
+    return "_Individual findings report not found. Run the full scanning pipeline first._"
 
 
 def build_executive_summary(chains: dict, target: str) -> str:
@@ -184,7 +189,7 @@ def generate_report(chains_path: str, deliverables_dir: str, target: str, output
     chain_list = chains.get("chains", [])
     chain_findings_md = "\n".join(format_chain(c) for c in chain_list) if chain_list else "_No compound chains identified._"
 
-    shannon_report = load_shannon_report(deliverables_dir)
+    shannon_report = load_findings_report(deliverables_dir)
 
     severity_counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for chain in chain_list:

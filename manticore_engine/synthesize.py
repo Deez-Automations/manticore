@@ -104,6 +104,8 @@ def load_findings(deliverables_dir: str) -> dict:
                 data = json.load(f)
                 if isinstance(data, list):
                     findings[vuln_class] = data
+                elif isinstance(data, dict) and "vulnerabilities" in data:
+                    findings[vuln_class] = data["vulnerabilities"]
                 elif isinstance(data, dict) and "findings" in data:
                     findings[vuln_class] = data["findings"]
             except json.JSONDecodeError:
