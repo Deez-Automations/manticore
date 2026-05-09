@@ -123,7 +123,7 @@ This is not "we ran inference on AMD." The AMD hardware is the reason the featur
 | Model | Qwen2.5-72B-Instruct (open source, local) |
 | Orchestration | Temporal (durable workflow engine) |
 | Browser Automation | Playwright (real exploit execution) |
-| Agent Framework | Claude Agent SDK (tool use + reasoning) |
+| Agent Framework | Custom multi-agent orchestration (tool use + reasoning) |
 | Language | TypeScript (Node.js 22) |
 
 ---
@@ -141,7 +141,7 @@ Create a GPU droplet (MI300X, vLLM image) on [AMD Developer Cloud](https://cloud
 vllm serve Qwen/Qwen2.5-72B-Instruct \
   --host 0.0.0.0 \
   --port 8000 \
-  --max-model-len 131072
+  --max-model-len 65536
 
 # Verify it's running
 curl http://localhost:8000/v1/models
@@ -175,7 +175,7 @@ pip install -r manticore_engine/requirements.txt
 
 ### Step 4 — Run Manticore chain synthesis
 
-After Shannon's pipeline completes, run the chain synthesis engine:
+After the scanning pipeline finishes, run the chain synthesis engine:
 
 ```bash
 # Point to the workspace deliverables from the completed scan
